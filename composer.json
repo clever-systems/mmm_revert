@@ -1,0 +1,12 @@
+{
+    "name": "clever-systems/mmm_revert",
+    "description": "Revert a site.",
+    "type": "drupal-drush",
+    "authors": [
+        {
+            "name": "Axel Rutz",
+            "email": "axel.rutz@clever-systems.net"
+        }
+    ],
+    "require": {}
+}
