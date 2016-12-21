@@ -23,13 +23,13 @@ function drush_mmm_revert() {
 
   _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
   && _mmm_revert_invoke(dt('Enable master module'), 'pm-enable', ['master'])
-  && _mmm_revert_invoke(dt('Master modules'), 'master-exec')
+  && _mmm_revert_invoke(dt('Master modules'), 'master-exec', [], ['no-cache-clear' => TRUE])
   && _mmm_revert_invoke(dt('Revert non-translation features'), 'fr-all', $translations)
   // Do not delete on language refresh to workaround bugs.
   && _mmm_revert_invoke(dt('Refresh strings'), 'language-refresh', [], [/* 'delete' => TRUE */])
   && (!$translations || _mmm_revert_invoke(dt('Revert translation features'), 'fr', $translations))
-  && _mmm_revert_invoke(dt('Refresh translation update info'), 'l10n-update-refresh')
-  && _mmm_revert_invoke(dt('Refresh translation update info'), 'l10n-update', [], ['mode' => 'replace'])
+  && _mmm_revert_invoke(dt('Refresh translation info'), 'l10n-update-refresh')
+  && _mmm_revert_invoke(dt('Update translations'), 'l10n-update', [], ['mode' => 'replace'])
   && _mmm_revert_invoke(dt('Clear caches'), 'cache-clear', ['all'])
   && _mmm_revert_invoke(dt('Refresh search API index'), 'search-api-index')
   && _mmm_revert_invoke(dt('Load entity cache'), 'ecload')
