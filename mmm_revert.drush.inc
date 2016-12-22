@@ -51,7 +51,7 @@ function _mmm_revert_invoke($msg, $cmd, $args = [], $options = []) {
   drush_log(dt('', $t_args), LogLevel::OK);
 
   $commands = drush_get_commands();
-  if (!isset($commands[$cmd])) {
+  if (!isset($commands[$cmd]) || !_mmm_revert_check_drupal_dependencies($commands[$cmd])) {
     drush_log(dt('Skip: @msg', $t_args), LogLevel::OK);
     return TRUE;
   }
@@ -66,4 +66,24 @@ function _mmm_revert_invoke($msg, $cmd, $args = [], $options = []) {
     drush_log(dt('Aborting: @msg', $t_args), LogLevel::ERROR);
   }
   return $success;
+}
+
+/**
+ * Check drupal dependencies.
+ *
+ * @param $command
+ * @return mixed
+ *
+ * Like @see drush_enforce_requirement_drupal_dependencies().
+ */
+function _mmm_revert_check_drupal_dependencies($command) {
+  if (!empty($command['drupal dependencies'])) {
+    foreach ($command['drupal dependencies'] as $dependency) {
+      drush_include_engine('drupal', 'environment');
+      if(!drush_module_exists($dependency)) {
+        return FALSE;
+      }
+    }
+  }
+  return TRUE;
 }
