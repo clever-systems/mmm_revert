@@ -82,8 +82,8 @@ function _mmm_revert_invoke($msg, $cmd, $args = [], $options = []) {
  */
 function _mmm_revert_check_drupal_dependencies($command) {
   if (!empty($command['drupal dependencies'])) {
+    drush_include_engine('drupal', 'environment');
     foreach ($command['drupal dependencies'] as $dependency) {
-      drush_include_engine('drupal', 'environment');
       if(!drush_module_exists($dependency)) {
         return FALSE;
       }
