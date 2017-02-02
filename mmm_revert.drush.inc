@@ -75,8 +75,8 @@ function _mmm_revert_invoke($msg, $cmd, $args = [], $options = []) {
 /**
  * Check drupal dependencies.
  *
- * @param $command
- * @return mixed
+ * @param array $command
+ * @return boolean
  *
  * Like @see drush_enforce_requirement_drupal_dependencies().
  */
