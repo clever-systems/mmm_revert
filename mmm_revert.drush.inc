@@ -16,9 +16,9 @@ function mmm_revert_drush_command() {
   );
   $items['mmm-crontab-revert'] = array(
     'description' => 'Revert crontab from snippets in directory.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_CONFIGURATION,
     'options' => [
-      'directory' => 'Directory to find snippets. Defaults to ../crontab.d.'
+      'directories' => 'Directories to find snippets. Defaults to "../crontab.d".'
     ],
   );
   $items['mmm-crontab-set'] = array(
@@ -33,7 +33,7 @@ function mmm_revert_drush_command() {
 }
 
 function drush_mmm_revert() {
-  if (file_exists(DRUPAL_ROOT . '/core/lib/Drupal.php')) {
+  if (_drush_mmm_revert_is_d8()) {
     // D8
     _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
     && _mmm_revert_invoke(dt('Import config'), 'config-import')
@@ -118,13 +118,39 @@ function _mmm_revert_check_drupal_dependencies($command) {
 }
 
 function drush_mmm_revert_mmm_crontab_revert() {
-  $directory = drush_get_option('directory', '../crontab.d');
-  if (file_exists($directory)) {
-    $files = glob($directory . '/*');
-    return drush_invoke_process('@self', 'mmm-crontab-set', $files);
+  // Get $environment_name
+  if (_drush_mmm_revert_is_d8()) {
+    global $settings;
+    $environment_name = isset($settings['mmm']['environment'])
+      ? $settings['mmm']['environment'] : 'NONE';
   }
+  else {
+    global $conf;
+    $environment_name = isset($conf['mmm']['environment'])
+      ? $conf['mmm']['environment'] : 'NONE';
+  }
+
+  // Get $directories
+  $directories = drush_get_option('directories', '../crontab.ENV.d:../crontab.common.d;../crontab.d');
+  if (!is_array($directories)) {
+    $directories = explode(':', $directories);
+  }
+  $directories = preg_replace('#\.ENV\.#u', $environment_name, $directories);
+
+  // Sort all file paths by their basename to merge files from all dirs.
+  $file_basenames_by_path = [];
+  foreach ($directories as $directory) {
+    $found_paths = (array) glob($directory . '/*');
+    foreach ($found_paths as $found_path) {
+      $file_basenames_by_path[$found_path] = basename($found_path);
+    }
+  }
+  asort($file_basenames_by_path);
+  $paths = array_keys($file_basenames_by_path);
+  return drush_invoke_process('@self', 'mmm-crontab-set', $paths);
 }
 
+// @todo unset.
 function drush_mmm_revert_mmm_crontab_set() {
   $prefix = 'DRUPAL_ROOT=' . DRUPAL_ROOT;
   $files = func_get_args();
@@ -191,8 +217,9 @@ function _mmm_revert_remove_empty_lines($string) {
   return $result;
 }
 
-if (!function_exists('module_exists')) {
-  function module_exists($module) {
-    return Drupal::moduleHandler()->moduleExists($module);
-  }
+/**
+ * @return bool
+ */
+function _drush_mmm_revert_is_d8() {
+  return file_exists(DRUPAL_ROOT . '/core/lib/Drupal.php');
 }
