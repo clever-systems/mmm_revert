@@ -131,7 +131,7 @@ function drush_mmm_revert_mmm_crontab_revert() {
   }
 
   // Get $directories
-  $directories = drush_get_option('directories', '../crontab.ENV.d:../crontab.common.d;../crontab.d');
+  $directories = drush_get_option('directories', '../crontab.d/ENV:../crontab.d/common;../crontab.d');
   if (!is_array($directories)) {
     $directories = explode(':', $directories);
   }
@@ -142,7 +142,9 @@ function drush_mmm_revert_mmm_crontab_revert() {
   foreach ($directories as $directory) {
     $found_paths = (array) glob($directory . '/*');
     foreach ($found_paths as $found_path) {
-      $file_basenames_by_path[$found_path] = basename($found_path);
+      if (is_file($found_path)) {
+        $file_basenames_by_path[$found_path] = basename($found_path);
+      }
     }
   }
   asort($file_basenames_by_path);
