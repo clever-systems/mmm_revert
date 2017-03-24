@@ -173,7 +173,7 @@ function drush_mmm_revert_mmm_crontab_set() {
   $success = drush_shell_exec('crontab -l');
   $output = implode("\n", drush_shell_exec_output());
   if (!$success) {
-    if (preg_match('#^no crontab for #u', drush_shell_exec_output())) {
+    if (preg_match('#^no crontab for #u', $output)) {
       $output = '';
     }
     else {
