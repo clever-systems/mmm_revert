@@ -120,7 +120,7 @@ function _mmm_revert_check_drupal_dependencies($command) {
 function drush_mmm_revert_mmm_crontab_revert() {
   // Get $environment_name
   if (_drush_mmm_revert_is_d8()) {
-    global $settings;
+    $settings = \Drupal\Core\Site\Settings::getInstance()->getAll();
     $environment_name = isset($settings['mmm']['environment'])
       ? $settings['mmm']['environment'] : 'NONE';
   }
@@ -131,7 +131,7 @@ function drush_mmm_revert_mmm_crontab_revert() {
   }
 
   // Get $directories
-  $directories = drush_get_option('directories', '../crontab.d/{ENV}:../crontab.d/common;../crontab.d');
+  $directories = drush_get_option('directories', '../crontab.d/{ENV}:../crontab.d/common:../crontab.d');
   if (!is_array($directories)) {
     $directories = explode(':', $directories);
   }
@@ -187,7 +187,7 @@ function drush_mmm_revert_mmm_crontab_set() {
   drush_log(dt("Adding to crontab:\n!crontab", ['!crontab' => $crontab_additions]));
 
   // Remove old cron lines.
-  $prefix_quoted = preg_quote($prefix, '#');
+  $prefix_quoted = preg_quote($prefix, '~');
   $new_crontab = preg_replace("~(^|\n)$prefix_quoted\n.*?\n#END DRUPAL_ROOT\n~us", "\n", $old_crontab);
   // Add new cron lines.
   $new_crontab .= $crontab_additions;
