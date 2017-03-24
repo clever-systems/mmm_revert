@@ -131,11 +131,11 @@ function drush_mmm_revert_mmm_crontab_revert() {
   }
 
   // Get $directories
-  $directories = drush_get_option('directories', '../crontab.d/ENV:../crontab.d/common;../crontab.d');
+  $directories = drush_get_option('directories', '../crontab.d/{ENV}:../crontab.d/common;../crontab.d');
   if (!is_array($directories)) {
     $directories = explode(':', $directories);
   }
-  $directories = preg_replace('#\.ENV\.#u', $environment_name, $directories);
+  $directories = preg_replace('#{ENV}#u', $environment_name, $directories);
 
   // Sort all file paths by their basename to merge files from all dirs.
   $file_basenames_by_path = [];
