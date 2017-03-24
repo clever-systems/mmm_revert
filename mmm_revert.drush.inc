@@ -174,19 +174,15 @@ function drush_mmm_revert_mmm_crontab_set() {
   $success = drush_shell_exec('crontab -l');
   $output = implode("\n", drush_shell_exec_output());
   if (!$success) {
-    if (1) {
-      drush_log(dt("Crontab -l: !o", ['!o' => $output]));
-      // Probably no crontab yet.
-      $result['error_status'] = 0;
-      $result['output'] = '';
+    if (preg_match('#^no crontab for #u', drush_shell_exec_output())) {
+      $output = '';
     }
     else {
-      return drush_set_error('drush_mmm_crontab:crontab_invalid', dt('Could not retrieve crontab'));
+      return drush_set_error('drush_mmm_crontab:crontab_invalid', dt('Could not retrieve crontab, outputr: !o', ['!o' => $output]));
     }
   }
-  $old_crontab = _mmm_revert_remove_empty_lines($output);
 
-  drush_print_r(get_defined_vars());
+  $old_crontab = _mmm_revert_remove_empty_lines($output);
 
   drush_log(dt("Old crontab:\n!crontab", ['!crontab' => $old_crontab]));
   drush_log(dt("Adding to crontab:\n!crontab", ['!crontab' => $crontab_additions]));
