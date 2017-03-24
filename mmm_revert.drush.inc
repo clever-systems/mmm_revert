@@ -160,7 +160,6 @@ function drush_mmm_revert_mmm_crontab_set() {
   $crontab_additions = $prefix . "\n";
   // Use drush magick to look up full alias including site url.
   // @see drush_sitealias_site_set().
-  $crontab_additions .= 'cd $DRUPAL_ROOT; drush site-set @self' . "\n";
   foreach ($files as $file) {
     $file_content = file_get_contents($file);
     if ($file_content === FALSE) {
