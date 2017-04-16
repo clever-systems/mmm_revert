@@ -38,6 +38,8 @@ function drush_mmm_revert() {
     _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
     && _mmm_revert_invoke(dt('Import config'), 'config-import')
     && _mmm_revert_invoke(dt('Revert crontab'), 'mmm-crontab-revert')
+    && _mmm_revert_invoke(dt('Check for new translations'), 'locale-check')
+    && _mmm_revert_invoke(dt('Import new translations'), 'locale-update')
     ;
   }
   else {
