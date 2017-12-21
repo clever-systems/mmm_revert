@@ -37,7 +37,6 @@ function drush_mmm_revert() {
     // D8
     _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
     && _mmm_revert_invoke(dt('Import config'), 'config-import')
-    && _mmm_revert_invoke(dt('Revert crontab'), 'mmm-crontab-revert')
     && _mmm_revert_invoke(dt('Check for new translations'), 'locale-check')
     && _mmm_revert_invoke(dt('Import new translations'), 'locale-update')
     ;
@@ -61,7 +60,6 @@ function drush_mmm_revert() {
     && _mmm_revert_invoke(dt('Update translations'), 'l10n-update', [], ['mode' => 'replace'] + $l10n_update_options)
     && _mmm_revert_invoke(dt('Clear caches'), 'cache-clear', ['all'])
     && _mmm_revert_invoke(dt('Refresh search API index'), 'search-api-index')
-    && _mmm_revert_invoke(dt('Revert crontab'), 'mmm-crontab-revert')
     && _mmm_revert_invoke(dt('Load entity cache'), 'ecload')
     ;
   }
