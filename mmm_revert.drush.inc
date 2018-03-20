@@ -48,8 +48,10 @@ function drush_mmm_revert() {
     $l10n_update_options = isset(drush_get_commands()['l10n-update']['options']['use-remote'])
       ? ['use-remote' => 0] : [];
 
-    _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
+    _mmm_revert_invoke(dt('Rebuild registry'), 'registry-rebuild', [], [])
+    && _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
     && (module_exists('master') || _mmm_revert_invoke(dt('Enable master module'), 'pm-enable', ['master']))
+    && drush_cache_clear_drush()
     && _mmm_revert_invoke(dt('Master modules'), 'master-exec', [], ['no-cache-clear' => TRUE])
     && _mmm_revert_invoke(dt('Revert non-translation features'), 'fr-all', $translations)
     // Do not delete on language refresh to workaround bugs.
@@ -60,6 +62,7 @@ function drush_mmm_revert() {
     && _mmm_revert_invoke(dt('Update translations'), 'l10n-update', [], ['mode' => 'replace'] + $l10n_update_options)
     && _mmm_revert_invoke(dt('Clear caches'), 'cache-clear', ['all'])
     && _mmm_revert_invoke(dt('Refresh search API index'), 'search-api-index')
+    // @todo Rebuild node access (which drush command?)
     && _mmm_revert_invoke(dt('Load entity cache'), 'ecload')
     ;
   }
