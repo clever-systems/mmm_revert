@@ -50,8 +50,8 @@ function drush_mmm_revert() {
 
     _mmm_revert_invoke(dt('Rebuild registry'), 'registry-rebuild', [], [])
     && _mmm_revert_invoke(dt('Update database'), 'updatedb', [], ['cache-clear' => FALSE])
-    && (module_exists('master') || _mmm_revert_invoke(dt('Enable master module'), 'pm-enable', ['master']))
-    && (drush_cache_clear_drush() || TRUE)
+    && (module_exists('master') ||
+      (_mmm_revert_invoke(dt('Enable master module'), 'pm-enable', ['master']) && drush_get_commands(TRUE)))
     && _mmm_revert_invoke(dt('Master modules'), 'master-exec', [], ['no-cache-clear' => TRUE])
     && _mmm_revert_invoke(dt('Revert non-translation features'), 'fr-all', $translations)
     // Do not delete on language refresh to workaround bugs.
